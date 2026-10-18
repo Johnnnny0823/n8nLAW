@@ -1,0 +1,3 @@
+# 測試檔（可能含個資）只留在本機
+testdata/*
+!testdata/README.md

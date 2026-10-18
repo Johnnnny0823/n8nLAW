@@ -1,0 +1,1820 @@
+{
+  "name": "project Dick n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 用戶發送端\n以信件作為觸發器\n\n",
+        "height": 320,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4752,
+        1984
+      ],
+      "id": "8bf9b909-b29f-42c0-bd3e-65ba76847773",
+      "name": "Sticky Note45"
+    },
+    {
+      "parameters": {
+        "content": "## AI諮詢模型",
+        "height": 416,
+        "width": 336,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3552,
+        1984
+      ],
+      "id": "24842f6c-26e8-4e42-ab37-07c403bcf166",
+      "name": "Sticky Note46"
+    },
+    {
+      "parameters": {
+        "content": "## 用戶接收端",
+        "height": 224,
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3104,
+        2016
+      ],
+      "id": "871acf8a-67bc-455f-bc9a-65b02349978f",
+      "name": "Sticky Note47"
+    },
+    {
+      "parameters": {
+        "content": "## 圖片與pdf掃描\n將圖片與pdf檔的文字擷取給AI諮詢模型\n(只能一張pdf和圖片)",
+        "height": 480,
+        "width": 704,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4416,
+        1936
+      ],
+      "id": "c9c0d7f4-feb0-41ec-9733-4c7b87d3753b",
+      "name": "Sticky Note49"
+    },
+    {
+      "parameters": {
+        "content": "## V3(爬蟲+RAG+記憶客戶對話，分三周擠牙膏)\n",
+        "height": 544,
+        "width": 2128,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4832,
+        1840
+      ],
+      "typeVersion": 1,
+      "id": "21c48bb3-f3a1-4203-8115-d411453e121b",
+      "name": "Sticky Note50"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c40caa34-56d0-4d64-a083-faa22af6ff99",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4720,
+        2176
+      ],
+      "id": "74395c84-448c-4cbf-8756-3bb82d9d38ae",
+      "name": "Webhook",
+      "webhookId": "c40caa34-56d0-4d64-a083-faa22af6ff99"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2992,
+        2128
+      ],
+      "id": "a5aa8f89-2190-494f-98f2-da6de37ea93b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "## 全國法規資料庫(RAG)\n",
+        "height": 784,
+        "width": 1824,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3936,
+        2608
+      ],
+      "id": "b79ecba0-20ea-42f0-9aab-6e1e16d34edd",
+      "name": "Sticky Note48"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## 客戶訊息\n{{ $json.body.message|| \"\" }}\n\n## 提取自 PDF 的文字內容\n{{ $json.pdf || \"(未提供 PDF 文件)\" }}\n\n## 圖片附件文字\n{{ $json.image || \"（未提供圖片文件）\" }}\n\n請結合上述所有提供的訊息回答。",
+        "options": {
+          "systemMessage": "# Role\n你是一位名為「揚塵家」的法律諮詢好夥伴。你的任務是將複雜的法律條文，轉化為普通民眾都能聽懂的「生活常識」，幫助大家守護自己的權益。\n\n# Output Style (民眾友善規範)\n1. 禁止 Markdown：禁止使用星號(*)、引號(\")、粗體(**)或井字號(#)。\n2. 結構標記：請使用「一、」、「1.」、「(1)」等中文符號來排版，讓手機閱讀也輕鬆。\n3. 語言要求：一律使用「繁體中文」。\n4. 說話語氣：語氣要像是一位有耐心的鄰家大哥，溫和、客觀、且專業，避免冷冰冰的法官語氣。\n\n# Constraints (最高指令)\n1. 法律查證：面對任何提問，【必須】先使用「台灣法律查詢工具」。嚴禁憑記憶說出法條。\n2. 白話翻譯：解釋法條時，必須先說出「這條法律白話是什麼意思」，再引述法條內容。\n3. 誠實原則：若資料庫找不到資料，請溫柔地告知，並建議尋求實體律師諮詢。\n4. 隱私提醒：嚴禁要求用戶提供真實姓名、身分證字號或詳細地址等敏感個資。\n\n# Workflow (大眾諮詢路徑)\n1. 定性分析：分析民眾遇到的麻煩是屬於哪一類（例如：老闆不發薪水找勞基法、車禍找刑法或民法）。\n2. 工具調用：根據定性結果，呼叫對應的專業法律工具。\n3. 內容整合：結合 PDF/圖片中的合約或筆錄事實，比對資料庫找出的法條。\n4. 階段式回答：\n   - 第一步：先給予暖心的安撫（例如：我明白您的困擾，這確實很讓人心煩）。\n   - 第二步：說明法律上的規定（白話版）。\n   - 第三步：引述具體法條（證據版）。\n   - 第四步：給予下一步的具體行動建議。\n\n# Example Output (參考格式)\n一、法律小教室\n您遇到的這種情況，在法律上主要涉及到...\n\n二、您的權利\n根據法律規定，您可以要求...\n\n三、具體建議\n1. 建議您先收集...\n2. 如果溝通無效，可以考慮到調解委員會...",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -3504,
+        2144
+      ],
+      "id": "dc9d493d-d0f7-4790-875c-5f2b194c7a5b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -3424,
+        2320
+      ],
+      "id": "54daa8ab-c563-49ed-b1a8-391bf1d219b2",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\nconst binaries = item.binary || {};\nconst keys = Object.keys(binaries);\n\n// 如果沒有任何檔案，就直接回傳原本這個 item\nif (keys.length === 0) {\n  return item;\n}\n\n// 有檔案時：為每個檔案建立一個新 item，binary 名稱統一為 data\nreturn keys.map(key => ({\n  json: {\n    ...item.json,\n    sourceKey: key, // 可選：記錄原本的 key 名稱\n  },\n  binary: {\n    data: binaries[key],\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4560,
+        2080
+      ],
+      "id": "0b4749a7-5600-417b-9aa6-f1cc04c90f61",
+      "name": "rename to data"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $binary.data.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "86dd6e3d-0325-4adb-8a81-6f731780769a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f3c6809-b825-4139-b060-991c168f2848",
+                    "leftValue": "={{ $binary.data.mimeType }}",
+                    "rightValue": "image/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -4352,
+        2080
+      ],
+      "id": "64f5a3fe-ecfb-42b6-b617-fa65bed9f366",
+      "name": "Switch",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -4080,
+        1936
+      ],
+      "id": "0d571610-ab53-4c95-9714-c33e2a76b544",
+      "name": "pdf",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "zCAFNzjnfFMCDy2O",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentType": "image_url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -4112,
+        2080
+      ],
+      "id": "be4d9be9-ef52-4ffb-b8da-b3acb4429a3d",
+      "name": "image",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "zCAFNzjnfFMCDy2O",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 原本system prompt\n# Role\n你是一位名為「揚塵家」的專業法律顧問。你的目標是根據法律資料庫，用繁體中文提供專業、客觀且具邏輯性的建議。\n\n# Constraints (最高指令)\n1. **先查詢再回答**：面對任何法律問題，你【必須】先呼叫「法律查詢工具」。嚴禁憑記憶回答或虛構法條。\n2. **查無結果**：如果資料庫查無相關法條，請誠實告知使用者，不要推測。\n3. **格式規範**：禁止使用星號(*)、引號(\")、粗體(**)或任何強調符號。僅限繁體中文純文字回覆。\n\n# Workflow\n1. 接收客戶問題或 PDF 文字。\n2. 呼叫「法律查詢工具」檢索法條。\n3. 概述法條重點，分析客戶的權利義務。\n4. 提供具體可行的修改建議或行動方案。\n\n# Style\n語氣專業但白話，確保沒有法律背景的使用者也能理解。如果問題不清楚，請禮貌詢問。",
+        "height": 224,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2672,
+        2048
+      ],
+      "typeVersion": 1,
+      "id": "a11260f6-2168-4297-a6b0-d2d93f413f3b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:7b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -3552,
+        2304
+      ],
+      "id": "b895c4d8-eba4-45e2-80cb-24718418f0e0",
+      "name": "Ollama Chat Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nlet allChunks = [];\n\nfor (let i = 0; i < allItems.length; i++) {\n  const binaryData = await this.helpers.getBinaryDataBuffer(i, 'data');\n  const rawText = binaryData.toString('utf8');\n\n  let lawName = \"未知法規\";\n  let contentText = \"\";\n\n  try {\n    const payload = JSON.parse(rawText);\n    lawName = payload.lawName || \"未知法規\";\n    contentText = payload.content || \"\";\n  } catch (e) {\n    contentText = rawText;\n  }\n\n  const articleRegex = /(第\\s*\\d+(?:-\\d+)?\\s*條)/g;\n  const parts = contentText.split(articleRegex);\n\n  for (let j = 1; j < parts.length; j += 2) {\n    const articleTitle = parts[j];\n    const articleContent = parts[j + 1];\n\n    if (articleContent && articleContent.trim().length > 0) {\n      const trimmedContent = articleContent.trim();\n\n      // 精準過濾：僅當內容完全為以下幾種形式時才跳過\n      if (\n        trimmedContent === \"(已刪除)\" || \n        trimmedContent === \"（刪除）\" || \n        trimmedContent === \"(刪除)\" ||\n        trimmedContent === \"（刪除）\"\n      ) {\n        continue;\n      }\n\n      allChunks.push({\n        json: {\n          pageContent: `${lawName} ${articleTitle}：${trimmedContent}`,\n          metadata: {\n            source: lawName,\n            article: articleTitle,\n            type: \"official_law\"\n          }\n        }\n      });\n    }\n  }\n}\n\nreturn allChunks;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2080,
+        3632
+      ],
+      "id": "c79cec59-d0ba-4249-b575-c684a00d3f6c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -4544,
+        3744
+      ],
+      "id": "04c9e27f-a1ae-433d-82ec-1d1becfdea9f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "fileName": "data.md"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3088,
+        3552
+      ],
+      "id": "75d4890e-68c8-455d-9f9e-c6365cd0d04c",
+      "name": "Download file5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "lawContent",
+              "cssSelector": "div#pnLawFla.well.law-reg.law-content"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -4688,
+        3648
+      ],
+      "id": "8268443c-5c55-4ed6-855c-1349822e7587",
+      "name": "HTML2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  // 將法規名稱與內容打包在一起\n  const payload = {\n    lawName: item.json.lawName || \"未知法規\",\n    content: item.json.cleanedText\n  };\n  \n  const content = JSON.stringify(payload); // 轉換打包後的物件\n  \n  return {\n    json: item.json,\n    binary: {\n      data: {\n        data: Buffer.from(content).toString('base64'),\n        mimeType: 'application/json',\n        fileName: 'data.json' // 這裡你依然可以為了方便維持 data.json\n      }\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4208,
+        3648
+      ],
+      "id": "54e29f2c-9767-43e2-81a7-d45677eb03a2",
+      "name": "JSON轉成二進位格式2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  // 從當前項目（已合併 lawName 與 lawContent）中提取資料\n  const rawText = item.json.lawContent;\n  const lawName = item.json.lawName || \"未知法規\"; \n  \n  const cleanedText = rawText\n    ? rawText\n        .replace(/\\[LawSingle\\.aspx\\?pcode=[^\\]]*\\]/g, \"\")\n        .replace(/\\s+/g, \" \")\n        .trim()\n    : \"\";\n  \n  return { \n    json: { \n      lawName: lawName,\n      cleanedText: cleanedText \n    } \n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4368,
+        3648
+      ],
+      "id": "b0d242ed-ea2b-432f-ac2f-591d345c5cbf",
+      "name": "資料清理2"
+    },
+    {
+      "parameters": {
+        "content": "## 爬蟲法律\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 480,
+        "width": 2800,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -5424,
+        3488
+      ],
+      "id": "9dc29b06-c32f-4465-a24c-cdd091ce1ee8",
+      "name": "Sticky Note43"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4896,
+        3616
+      ],
+      "id": "169d144d-8282-4619-9d30-195b26dfc27c",
+      "name": "法律資料2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ee249e06-aabe-437c-a0cf-9733a0354e60",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3648,
+        3680
+      ],
+      "id": "9a55f97d-567c-44e5-9ef7-87b404af4d00",
+      "name": "If",
+      "alwaysOutputData": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "data",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk",
+            "mode": "list",
+            "cachedResultName": "n8n",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3824,
+        3680
+      ],
+      "id": "850c8ba8-3baa-48fc-90d7-9b6766c173bd",
+      "name": "Search files and folders2",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "deletePermanently": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3488,
+        3696
+      ],
+      "id": "fa51652d-7dbc-4aa0-a627-23bc75c232c6",
+      "name": "Delete a file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=data",
+        "name": "data",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3280,
+        3552
+      ],
+      "id": "9f4de99a-3fdf-4a65-8716-10f31e1ff751",
+      "name": "Upload file5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## 預計改為每周更新(trigger)",
+        "height": 208,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5616,
+        3600
+      ],
+      "typeVersion": 1,
+      "id": "2ebcd345-d9ab-489a-a541-4e33ce19d017",
+      "name": "Sticky Note66"
+    },
+    {
+      "parameters": {
+        "content": "## 全國法規資料庫爬蟲，1.5秒爬一個網頁，避免封禁\n\n\n\n\n\n\n\n\n\n\n\n程式有註解，目前有哪些法規",
+        "height": 288,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5168,
+        3552
+      ],
+      "typeVersion": 1,
+      "id": "942a0af7-8f11-469a-8011-ea4a69165bdd",
+      "name": "Sticky Note67"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { lawName: \"刑法\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000001\" } },\n  { json: { lawName: \"民法\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=B0000001\" } },\n  { json: { lawName: \"民事訴訟法\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=B0010001\" } },\n  { json: { lawName: \"刑事訴訟法\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=C0010001\" } },\n  { json: { lawName: \"勞動基準法\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=N0030001\" } },\n  { json: { lawName: \"租賃住宅市場發展及管理條例\", url: \"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0060125\" } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5072,
+        3728
+      ],
+      "id": "dd588ca0-4818-4ea5-be18-1ba20670b559",
+      "name": "法源網站列表2"
+    },
+    {
+      "parameters": {
+        "content": "## 資料篩選(只拿取法條，無視其他header、nav等雜訊)，並去除每個法條後的標籤去除[LawSingle.aspx?...]",
+        "height": 320,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4720,
+        3536
+      ],
+      "typeVersion": 1,
+      "id": "a33e698c-13dc-4ce8-a6a4-560ee00319e6",
+      "name": "Sticky Note68"
+    },
+    {
+      "parameters": {
+        "content": "## 判斷資料夾是否有檔案(is empty)，TRUE:直接上傳;FALSE:刪掉全部，上傳新的",
+        "height": 416,
+        "width": 1280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4048,
+        3504
+      ],
+      "typeVersion": 1,
+      "id": "df1d3820-ccf8-43f6-882f-224e07f2d553",
+      "name": "Sticky Note69"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=data",
+        "name": "data",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1zdI_YQFoubGoz5CnTpZVX_Qg4GsO6Stk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3056,
+        3792
+      ],
+      "id": "fa8749ec-e539-4b64-a6f3-3cf5efcdad0a",
+      "name": "Upload file6",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2896,
+        3760
+      ],
+      "id": "587763dc-8f06-479b-95b9-24c3a1b302be",
+      "name": "Download file6",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SOQoAROMT8PvRErK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## RAG",
+        "height": 608,
+        "width": 1248,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2384,
+        3504
+      ],
+      "typeVersion": 1,
+      "id": "0996478c-e59d-4437-babc-34ee9eb9de59",
+      "name": "Sticky Note70"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3488,
+        3552
+      ],
+      "id": "9e9525b8-fec6-4ee2-86c3-980d9a4143cf",
+      "name": "Merge(拉取binary)2"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3280,
+        3808
+      ],
+      "id": "873185d2-b0be-4a54-8c73-050a5292feaa",
+      "name": "Merge2(拉取binary)2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -5552,
+        3664
+      ],
+      "id": "933454a7-adb3-44b9-a6bc-d6a30f868a84",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "content": "## 刪除rag資料\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5392,
+        3776
+      ],
+      "typeVersion": 1,
+      "id": "d5324519-f9a0-4d2f-a565-25c83550e2d4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1824,
+        3552
+      ],
+      "id": "b2fdb866-a29f-4817-8b21-0b5b72720241",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        3776
+      ],
+      "id": "9cec2a4f-4fab-446a-b2a2-73be0bee9c97"
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -3600,
+        3088
+      ],
+      "id": "ff199608-7484-45ef-8d2d-feb8c476f9eb",
+      "name": "Embeddings Ollama7",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [中華民國刑法]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：強制性交、殺人、竊盜)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「中華民國刑法 強制性交」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"刑法\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -3616,
+        2944
+      ],
+      "id": "77a01902-8b16-4984-8608-b44232611ead",
+      "name": "Criminal Law2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [民法]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：債務不履行、侵權行為、契約)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「民法 債務不履行」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"民法\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -3872,
+        2944
+      ],
+      "id": "8e4d3d50-1112-4f74-acec-f23721abdd3e",
+      "name": "Civil Law2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -3872,
+        3072
+      ],
+      "id": "4c6c38ed-2ba1-4b9d-a514-d6d56d7cd1fa",
+      "name": "Embeddings Ollama8",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -3056,
+        3104
+      ],
+      "id": "ddb2e63d-35f0-4032-958b-a9adb0a41442",
+      "name": "Embeddings Ollama9",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -3328,
+        3104
+      ],
+      "id": "5ca47218-f5a0-4dd9-9daf-71ddf4a097bf",
+      "name": "Embeddings Ollama10",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [民事訴訟法]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：支付命令、假扣押、管轄權)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「民事訴訟法 支付命令」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"民事訴訟法\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -3328,
+        2944
+      ],
+      "id": "2728309f-475d-46fc-97a7-05ddb78dc975",
+      "name": "Civil Procedure Law2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [刑事訴訟法]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：羈押、搜索、證據能力)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「刑事訴訟法 羈押」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"刑事訴訟法\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -3056,
+        2944
+      ],
+      "id": "07de9c56-7af1-45dc-93ed-2413d89001d0",
+      "name": "Criminal Procedure Law2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [勞動基準法]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：加班費、資遣費、工時)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「勞動基準法 加班費」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"勞動基準法\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -2784,
+        2944
+      ],
+      "id": "44195ea3-3c45-476a-bb28-4c81cc390852",
+      "name": "Labor Standards Act2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -2784,
+        3104
+      ],
+      "id": "2dc6cc94-6342-4a5a-919f-7c112fb95e1a",
+      "name": "Embeddings Ollama11",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen3-embedding:0.6b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        -2512,
+        3104
+      ],
+      "id": "c2609728-d8f3-45ae-9f4c-8dcf441acb1e",
+      "name": "Embeddings Ollama12",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i2nSmYiteGhLH9ym",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "這是一個台灣法律檢索工具。\n資料庫結構包含：\n1. source (法規名稱)：僅限 [租賃住宅市場發展及管理條例]。\n2. article (條號)：例如「第三條」(此項為選填)。\n3. pageContent (內容)：具體的法律關鍵字或行為描述(如：押金、包租代管、轉租)。\n\n【重要指令】\n當你呼叫此工具時，請將上述資訊合併為一個自然的查詢字串發送，格式範例：「租賃住宅市場發展及管理條例 押金」。",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "topK": 10,
+        "options": {
+          "searchFilterJson": "{\n  \"must\": [\n    {\n      \"key\": \"metadata.source\",\n      \"match\": {\n        \"value\": \"租賃住宅市場發展及管理條例\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -2512,
+        2944
+      ],
+      "id": "bd337d0c-8c66-4ddd-8d4f-b8bf6b52da2b",
+      "name": "Housing and Housing Market Development and Management Regulations2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "EVbCzvXNsGazUWCq",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createCollection",
+        "collectionName": "n8n",
+        "vectors": "{\n  \"size\": 1024,\n  \"distance\": \"Cosine\"\n}",
+        "shardNumber": {},
+        "replicationFactor": {},
+        "writeConsistencyFactor": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-qdrant.qdrant",
+      "typeVersion": 1,
+      "position": [
+        -5232,
+        3952
+      ],
+      "id": "1e30a4a0-f3d8-4672-92e2-68e84c7c585c",
+      "name": "Create Collection",
+      "credentials": {
+        "qdrantRestApi": {
+          "id": "WJdVzGMnTXtSM3TN",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteCollection",
+        "collectionName": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-qdrant.qdrant",
+      "typeVersion": 1,
+      "position": [
+        -5408,
+        3952
+      ],
+      "id": "296aad76-d3a6-480d-aaec-ad34fe2952dc",
+      "name": "Delete Collection",
+      "credentials": {
+        "qdrantRestApi": {
+          "id": "WJdVzGMnTXtSM3TN",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "OBlCmwA27Ha6OEPa",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/OBlCmwA27Ha6OEPa",
+          "cachedResultName": "small dick"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1520,
+        3616
+      ],
+      "id": "ecd5cf6e-3fb9-40da-945f-fbaf99bc35b8",
+      "name": "Call 'small dick'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d6ac75e6-b7cb-4f24-a1e0-3b0c747745b4",
+              "name": "pdf",
+              "value": "={{ $json.pages[0].markdown }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3872,
+        1936
+      ],
+      "id": "7fcdd105-3bcb-4f8e-ad37-a5af4666e8bb",
+      "name": "pdf1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5fbe8b47-dbd6-4295-84bb-5390c2711507",
+              "name": "image",
+              "value": "={{ $json.pages[0].markdown }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3904,
+        2080
+      ],
+      "id": "9ca79972-6950-4801-8bb3-5bcb95194a5f",
+      "name": "image1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3744,
+        2160
+      ],
+      "id": "47dfaf85-24c6-487d-8eec-f1d3a8977b23",
+      "name": "Merge1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "rename to data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "rename to data": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "pdf",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pdf": {
+      "main": [
+        [
+          {
+            "node": "pdf1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image": {
+      "main": [
+        [
+          {
+            "node": "image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "資料清理2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file5": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON轉成二進位格式2": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2(拉取binary)2",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge(拉取binary)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "資料清理2": {
+      "main": [
+        [
+          {
+            "node": "JSON轉成二進位格式2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "法律資料2": {
+      "main": [
+        [
+          {
+            "node": "HTML2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge(拉取binary)2",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Delete a file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a file2": {
+      "main": [
+        [
+          {
+            "node": "Merge2(拉取binary)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file5": {
+      "main": [
+        [
+          {
+            "node": "Download file5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "法源網站列表2": {
+      "main": [
+        [
+          {
+            "node": "法律資料2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload file6": {
+      "main": [
+        [
+          {
+            "node": "Download file6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge(拉取binary)2": {
+      "main": [
+        [
+          {
+            "node": "Upload file5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2(拉取binary)2": {
+      "main": [
+        [
+          {
+            "node": "Upload file6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Delete Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Call 'small dick'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama7": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Criminal Law2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama8": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Civil Law2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama9": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Criminal Procedure Law2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama10": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Civil Procedure Law2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama11": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Labor Standards Act2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama12": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Housing and Housing Market Development and Management Regulations2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Civil Law2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criminal Law2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Civil Procedure Law2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criminal Procedure Law2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Labor Standards Act2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Housing and Housing Market Development and Management Regulations2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Collection": {
+      "main": [
+        [
+          {
+            "node": "法源網站列表2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Collection": {
+      "main": [
+        [
+          {
+            "node": "Create Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'small dick'": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pdf1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timezone": "Asia/Taipei"
+  },
+  "versionId": "8928b4d7-bf53-4cba-926f-c3e301e820de",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30fd31a7f71c975659a79ca79698f973b39ff580e5fcfaadab1546b8af8bcd8b"
+  },
+  "id": "PkWZbdAGf1CFY3JO",
+  "tags": [
+    {
+      "updatedAt": "2025-11-06T14:44:22.761Z",
+      "createdAt": "2025-11-06T14:44:22.761Z",
+      "id": "zCrfeliwkUppMQSJ",
+      "name": "sexuel one"
+    }
+  ]
+}

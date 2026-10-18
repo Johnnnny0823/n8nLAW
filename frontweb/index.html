@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Legal Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="chat-sidebar" id="chatSidebar">
+            <div class="sidebar-header">
+                <div class="search-container">
+                    <input type="text" id="historySearchInput" placeholder="搜尋紀錄..." aria-label="搜尋歷史紀錄">
+                </div>
+                <button id="newChatBtn" class="new-chat-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    新對話
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be inserted here -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div id="disclaimerBanner" class="disclaimer-banner hidden">
+                <div class="disclaimer-content">
+                    <span class="warning-icon">⚠️</span>
+                    <span>提醒您：AI 建議僅供參考，並非正式法律意見。重要案件請諮詢專業律師。</span>
+                </div>
+                <button id="closeDisclaimerBtn" class="close-disclaimer-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6L18 18" />
+                    </svg>
+                </button>
+            </div>
+
+            <header class="chat-header">
+                <button id="toggleSidebarBtn" class="toggle-sidebar-btn" aria-label="切換側邊欄">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18" />
+                    </svg>
+                </button>
+                <div class="logo-container">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <h1>AI 法律顧問</h1>
+                </div>
+                <p class="subtitle">您的專業法律諮詢助手</p>
+                <button id="panicBtn" class="panic-btn" title="緊急離開 (清除紀錄並跳轉)">緊急離開</button>
+            </header>
+
+            <main class="chat-window" id="chatWindow">
+                <div class="message ai-message welcome-message">
+                    <div class="avatar">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 6C13.66 6 15 7.34 15 9C15 10.66 13.66 12 12 12C10.34 12 9 10.66 9 9C9 7.34 10.34 6 12 6ZM12 20.2C9.5 20.2 7.29 18.92 6 16.98C6.03 14.99 10 13.9 12 13.9C13.99 13.9 17.97 14.99 18 16.98C16.71 18.92 14.5 20.2 12 20.2Z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        你好！我是您的 AI 法律顧問。請問有什麼法律問題我可以協助您嗎？
+                    </div>
+                </div>
+
+                <div class="suggestions-container">
+                    <button class="suggestion-chip">我面臨家暴 有什麼手段保護自己</button>
+                    <button class="suggestion-chip">收到傳票了該怎麼辦</button>
+                    <button class="suggestion-chip">車禍和解注意事項</button>
+                    <button class="suggestion-chip">房東不退押金怎麼辦</button>
+                    <button class="suggestion-chip">被詐騙怎麼把錢追回來</button>
+                    <button class="suggestion-chip">公司無故解僱如何求償</button>
+                </div>
+            </main>
+
+            <div id="filePreviewArea" class="file-preview-area"></div>
+            <footer class="chat-input-area">
+                <div class="input-wrapper">
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf" style="display: none;">
+                    <button id="attachBtn" aria-label="上傳檔案">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M21.44 11.05L12.25 20.24C11.1242 21.3658 9.59718 21.9983 8.00504 21.9983C6.41289 21.9983 4.88588 21.3658 3.76004 20.24C2.63419 19.1142 2.00171 17.5872 2.00171 15.995C2.00171 14.4029 2.63419 12.8759 3.76004 11.75L12.95 2.56003C13.7006 1.80946 14.7186 1.38782 15.78 1.38782C16.8415 1.38782 17.8595 1.80946 18.61 2.56003C19.3606 3.31061 19.7822 4.3286 19.7822 5.39003C19.7822 6.45147 19.3606 7.46946 18.61 8.22003L9.42004 17.41C9.04475 17.7853 8.53575 17.9961 8.00504 17.9961C7.47432 17.9961 6.96532 17.7853 6.59004 17.41C6.21475 17.0347 6.00394 16.5257 6.00394 15.995C6.00394 15.4643 6.21475 14.9553 6.59004 14.58L15.07 6.10003"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <textarea id="userInput" placeholder="輸入您的法律問題..." rows="1"></textarea>
+                    <button id="sendBtn" aria-label="發送訊息">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="disclaimer">
+                    AI 回覆僅供參考，不代表正式法律意見。
+                </div>
+            </footer>
+        </div>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

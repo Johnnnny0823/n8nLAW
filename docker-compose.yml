@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # 1. n8n 服務
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n_server
+    restart: always
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      - GENERIC_TIMEZONE=Asia/Taipei
+      - N8N_HOST=localhost
+    networks:
+      - ai_network
+    depends_on:
+      - qdrant
+      - ollama
+
+  # 2. Ollama 服務 (含 GPU 加速 - GTX 1650)
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_server
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - ai_network
+
+  # 3. Qdrant 服務 (新增的部分)
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant_server
+    restart: always
+    ports:
+      - "6333:6333" # Qdrant 的 HTTP API 端口 (n8n 用這個連線)
+      - "6334:6334" # Qdrant 的 gRPC 端口 (選用)
+    volumes:
+      - qdrant_data:/qdrant/storage # 確保向量資料不會因為重開機而消失
+    networks:
+      - ai_network
+
+networks:
+  ai_network:
+    driver: bridge
+
+volumes:
+  n8n_data:
+    external: true
+  ollama_data:
+  qdrant_data: # 自動建立 Qdrant 的資料卷
