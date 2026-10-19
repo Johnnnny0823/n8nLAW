@@ -167,7 +167,7 @@ docker exec -it ollama_server ollama pull qwen3-embedding:0.6b
 
 匯入後要做的設定：
 
-- 主流程的「Call 'small dick'」節點重新選擇剛匯入的子流程（原本綁的是組員 n8n 裡的 workflow ID）
+- 主流程的「Call RAG 子流程」節點重新選擇剛匯入的子流程（原本綁的是組員 n8n 裡的 workflow ID）
 - 設定 credentials：
   - Ollama：`http://ollama:11434`（同一個 Docker 網路內用服務名稱連線）
   - Qdrant：`http://qdrant:6333`

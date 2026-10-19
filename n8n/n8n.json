@@ -1,5 +1,5 @@
 {
-  "name": "project Dick n8n",
+  "name": "AI 法律顧問 主流程",
   "nodes": [
     {
       "parameters": {
@@ -1172,7 +1172,7 @@
           "value": "OBlCmwA27Ha6OEPa",
           "mode": "list",
           "cachedResultUrl": "/workflow/OBlCmwA27Ha6OEPa",
-          "cachedResultName": "small dick"
+          "cachedResultName": "AI 法律顧問 RAG 子流程"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -1191,7 +1191,7 @@
         3616
       ],
       "id": "ecd5cf6e-3fb9-40da-945f-fbaf99bc35b8",
-      "name": "Call 'small dick'"
+      "name": "Call RAG 子流程"
     },
     {
       "parameters": {
@@ -1579,7 +1579,7 @@
         [],
         [
           {
-            "node": "Call 'small dick'",
+            "node": "Call RAG 子流程",
             "type": "main",
             "index": 0
           }
@@ -1751,7 +1751,7 @@
         ]
       ]
     },
-    "Call 'small dick'": {
+    "Call RAG 子流程": {
       "main": [
         [
           {
