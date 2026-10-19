@@ -1,3 +1,19 @@
 # 測試檔（可能含個資）只留在本機
 testdata/*
 !testdata/README.md
+
+# 環境變數與金鑰
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Log 與暫存檔
+*.log
+*.tmp
+
+# 系統檔
+.DS_Store
+Thumbs.db
