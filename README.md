@@ -149,7 +149,7 @@ docker volume create n8n_data
 docker compose up -d
 ```
 
-服務預設埠：
+服務只把以下埠發布到本機 `127.0.0.1`。容器之間沿用 Docker 網路及服務名稱連線。
 
 - n8n: `5678`
 - Ollama: `11434`

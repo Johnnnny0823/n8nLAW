@@ -392,11 +392,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chip.innerHTML = `
                 ${icon}
-                <span>${file.name}</span>
+                <span></span>
                 <div class="remove-file" data-index="${index}">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
             `;
+            chip.querySelector('span').textContent = file.name;
             filePreviewArea.appendChild(chip);
         });
 
@@ -529,17 +530,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (files.length > 0) {
             contentHtml += '<div class="message-files" style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">';
             files.forEach(file => {
-                const isImage = file.type && file.type.startsWith('image/'); // Check if we have type info
-                // If loading from history, we might just have name. We can guess by extension or store type.
-                // In saveMessageToSession we stored {name, type}.
-
                 const icon = (file.type && file.type.startsWith('image/'))
                     ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/></svg>'
                     : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H8C6.9 2 6 2.9 6 4V16C6 17.1 6.9 18 8 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H8V4H20V16ZM4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6Z" fill="currentColor"/></svg>';
                 contentHtml += `
                     <div style="display: flex; align-items: center; gap: 0.25rem; background: rgba(0,0,0,0.2); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem;">
                         ${icon}
-                        <span>${file.name}</span>
+                        <span>${escapeHtml(file.name)}</span>
                     </div>
                 `;
             });
@@ -627,11 +624,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    function formatText(text) {
+    function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
-        let safeText = div.innerHTML;
-        safeText = safeText.replace(/\n/g, '<br>');
-        return safeText;
+        return div.innerHTML;
+    }
+
+    function formatText(text) {
+        return escapeHtml(text).replace(/\n/g, '<br>');
     }
 });
