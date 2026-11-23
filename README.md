@@ -138,6 +138,13 @@ flowchart LR
 
 ---
 
+## 🔒 資安防護
+
+- **Docker Compose** 將 n8n、Ollama 與 Qdrant 的四個服務埠綁定到 `127.0.0.1`。容器之間仍使用 Docker 網路及服務名稱通訊。
+- **檔案預覽**以 `textContent` 顯示檔名，對話紀錄中的檔名在插入前會做 HTML 跳脫。
+
+已用 `docker compose config` 驗證發布埠的綁定位址，並以 `node --check frontweb/script.js` 檢查前端語法。實際容器啟動及 Webhook 到模型的流程仍待驗證。對外部署時需另設 Webhook 驗證與存取控制。見 [Compose 設定](docker-compose.yml)、[前端檔名處理](frontweb/script.js)。
+
 ## 🚀 快速開始
 
 ### 1) 啟動服務
